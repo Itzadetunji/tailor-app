@@ -1,0 +1,58 @@
+=> Booting Puma
+=> Rails 8.0.2.1 application starting in development 
+=> Run `bin/rails server --help` for more startup options
+Puma starting in single mode...
+* Puma version: 6.6.1 ("Return to Forever")
+* Ruby version: ruby 3.4.5 (2025-07-16 revision 20cda200d3) +YJIT +PRISM [arm64-darwin24]
+*  Min threads: 3
+*  Max threads: 3
+*  Environment: development
+*          PID: 31034
+* Listening on http://127.0.0.1:3000
+* Listening on http://[::1]:3000
+Use Ctrl-C to stop
+Started POST "/api/v1/auth/request_magic_link" for ::1 at 2025-08-18 23:26:32 +0100
+  [1m[36mActiveRecord::SchemaMigration Load (2.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TailorApp'*/[0m
+Processing by Api::V1::AuthController#request_magic_link as */*
+  Parameters: {"email" => "[FILTERED]", "first_name" => "John", "last_name" => "Doe", "auth" => {"email" => "[FILTERED]", "first_name" => "John", "last_name" => "Doe"}}
+  [1m[36mUser Load (1.6ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'john.doe@example.com' LIMIT 1 /*action='request_magic_link',application='TailorApp',controller='auth'*/[0m
+  ↳ app/services/auth_service.rb:3:in 'AuthService.authenticate_user!'
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN /*action='request_magic_link',application='TailorApp',controller='auth'*/[0m
+  ↳ app/services/auth_service.rb:7:in 'AuthService.authenticate_user!'
+  [1m[36mUser Exists? (3.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER('john.doe@example.com') LIMIT 1 /*action='request_magic_link',application='TailorApp',controller='auth'*/[0m
+  ↳ app/services/auth_service.rb:7:in 'AuthService.authenticate_user!'
+  [1m[36mUser Create (2.2ms)[0m  [1m[32mINSERT INTO "users" ("email", "first_name", "last_name", "created_at", "updated_at") VALUES ('john.doe@example.com', 'John', 'Doe', '2025-08-18 22:26:32.450611', '2025-08-18 22:26:32.450611') RETURNING "id" /*action='request_magic_link',application='TailorApp',controller='auth'*/[0m
+  ↳ app/services/auth_service.rb:7:in 'AuthService.authenticate_user!'
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mCOMMIT /*action='request_magic_link',application='TailorApp',controller='auth'*/[0m
+  ↳ app/services/auth_service.rb:7:in 'AuthService.authenticate_user!'
+  [1m[36mAuthCode Update All (3.0ms)[0m  [1m[33mUPDATE "auth_codes" SET "used_at" = '2025-08-18 22:26:32.486888' WHERE "auth_codes"."user_id" = 1 AND "auth_codes"."used_at" IS NULL /*action='request_magic_link',application='TailorApp',controller='auth'*/[0m
+  ↳ app/models/user.rb:16:in 'User#generate_auth_code!'
+Completed 500 Internal Server Error in 136ms (ActiveRecord: 39.2ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ArgumentError (wrong number of arguments (given 1, expected 0)):
+  
+app/models/auth_code.rb:20:in 'valid?'
+app/models/user.rb:22:in 'User#generate_auth_code!'
+app/services/auth_service.rb:17:in 'AuthService.authenticate_user!'
+app/controllers/api/v1/auth_controller.rb:16:in 'Api::V1::AuthController#request_magic_link'
+Started POST "/api/v1/auth/request_magic_link" for ::1 at 2025-08-18 23:26:32 +0100
+Processing by Api::V1::AuthController#request_magic_link as */*
+  Parameters: {"email" => "[FILTERED]", "auth" => {"email" => "[FILTERED]"}}
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'john.doe@example.com' LIMIT 1 /*action='request_magic_link',application='TailorApp',controller='auth'*/[0m
+  ↳ app/services/auth_service.rb:3:in 'AuthService.authenticate_user!'
+  [1m[36mAuthCode Update All (0.3ms)[0m  [1m[33mUPDATE "auth_codes" SET "used_at" = '2025-08-18 22:26:32.559112' WHERE "auth_codes"."user_id" = 1 AND "auth_codes"."used_at" IS NULL /*action='request_magic_link',application='TailorApp',controller='auth'*/[0m
+  ↳ app/models/user.rb:16:in 'User#generate_auth_code!'
+Completed 500 Internal Server Error in 28ms (ActiveRecord: 0.8ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ArgumentError (wrong number of arguments (given 1, expected 0)):
+  
+app/models/auth_code.rb:20:in 'valid?'
+app/models/user.rb:22:in 'User#generate_auth_code!'
+app/services/auth_service.rb:17:in 'AuthService.authenticate_user!'
+app/controllers/api/v1/auth_controller.rb:16:in 'Api::V1::AuthController#request_magic_link'
+- Gracefully stopping, waiting for requests to finish
+Exiting
