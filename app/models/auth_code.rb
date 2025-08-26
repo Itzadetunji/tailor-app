@@ -26,6 +26,6 @@ class AuthCode < ApplicationRecord
   end
   
   def magic_link(base_url)
-    "#{base_url}/auth/verify?token=#{token}"
+    "#{base_url}/api/v1/auth/verify?token=#{token}"
   end
 end

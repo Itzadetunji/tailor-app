@@ -12,7 +12,7 @@ Rails.application.routes.draw do
       post 'auth/request_magic_link', to: 'auth#request_magic_link'
       post 'auth/verify_code', to: 'auth#verify_code'
       get 'auth/verify', to: 'auth#verify_magic_link'
-      get 'auth/me', to: 'auth#me'
+      get 'auth/profile', to: 'auth#profile'
       delete 'auth/logout', to: 'auth#logout'
     end
   end

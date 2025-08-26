@@ -5,18 +5,25 @@ class EmailService
     # For development, we'll just log the email content
     # In production, you'd integrate with a service like SendGrid, Mailgun, etc.
     
+    # Fallback greeting when first/last name may be blank
+    display_name = if user.first_name.present? || user.last_name.present?
+      user.full_name.strip
+    else
+      user.email
+    end
+
     email_body = <<~EMAIL
-      Hi #{user.first_name},
-      
+      Hi #{display_name},
+
       You can sign in to your account using either:
-      
+
       1. This 6-digit code: #{auth_code.code}
       2. Or click this magic link: #{magic_link}
-      
+
       This code will expire in 30 minutes.
-      
+
       If you didn't request this, please ignore this email.
-      
+
       Best regards,
       The Tailor App Team
     EMAIL

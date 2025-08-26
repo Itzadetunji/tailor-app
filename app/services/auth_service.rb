@@ -1,17 +1,14 @@
 class AuthService
-  def self.authenticate_user!(email, first_name = nil, last_name = nil)
-    user = User.find_by(email: email.downcase)
-    
-    # Create user if they don't exist and we have their name
-    if user.nil? && first_name.present? && last_name.present?
+  def self.authenticate_user!(email)
+    user = User.find_by(email: email.downcase) # Checks if a user exists with the provided email.
+
+    # Create user if they don't exist; allow creation with email only
+    if user.nil?
+      # Store nil for names when not supplied to avoid saving placeholder data
       user = User.create!(
         email: email.downcase,
-        first_name: first_name,
-        last_name: last_name
       )
     end
-    
-    return { success: false, message: 'User not found' } unless user
     
     # Generate auth code
     auth_code = user.generate_auth_code!
@@ -32,8 +29,9 @@ class AuthService
     # Mark code as used
     auth_code.use!
     
-    # Generate JWT token
-    token = JwtService.encode({ user_id: auth_code.user.id })
+  # Generate JWT token and persist it
+  token = JwtService.encode({ user_id: auth_code.user.id })
+  Token.create!(user: auth_code.user, token: token, expires_at: 24.hours.from_now)
     
     {
       success: true,
@@ -51,8 +49,9 @@ class AuthService
     # Mark code as used
     auth_code.use!
     
-    # Generate JWT token
-    jwt_token = JwtService.encode({ user_id: auth_code.user.id })
+  # Generate JWT token and persist it
+  jwt_token = JwtService.encode({ user_id: auth_code.user.id })
+  Token.create!(user: auth_code.user, token: jwt_token, expires_at: 24.hours.from_now)
     
     {
       success: true,
@@ -70,6 +69,10 @@ class AuthService
     user = User.find_by(id: payload[:user_id])
     
     return { success: false, message: 'User not found' } unless user
+    
+  # Ensure token exists in DB and is active
+  token_record = Token.active.find_by(token: token)
+  return { success: false, message: 'Token not found' } unless token_record && token_record.user_id == user.id
     
     {
       success: true,

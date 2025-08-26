@@ -1,11 +1,9 @@
 class Api::V1::AuthController < ApplicationController
-  before_action :authenticate_user!, only: [:me, :logout]
+  before_action :authenticate_user!, only: [:profile, :logout] #This is basically a middleware
   
   # POST /api/v1/auth/request_magic_link
   def request_magic_link
     email = params[:email]&.strip&.downcase
-    first_name = params[:first_name]&.strip
-    last_name = params[:last_name]&.strip
     
     if email.blank?
       render json: { error: 'Email is required' }, status: :bad_request
@@ -13,9 +11,9 @@ class Api::V1::AuthController < ApplicationController
     end
     
     # Authenticate or create user
-    result = AuthService.authenticate_user!(email, first_name, last_name)
+    result = AuthService.authenticate_user!(email)
     
-    unless result[:success]
+    if !result[:success]
       render json: { error: result[:message] }, status: :unprocessable_entity
       return
     end
@@ -92,8 +90,8 @@ class Api::V1::AuthController < ApplicationController
     end
   end
   
-  # GET /api/v1/auth/me
-  def me
+  # GET /api/v1/auth/profile
+  def profile
     render json: {
       user: {
         id: current_user.id,
@@ -107,7 +105,13 @@ class Api::V1::AuthController < ApplicationController
   
   # DELETE /api/v1/auth/logout
   def logout
-    # Since we're using JWT, logout is handled client-side by discarding the token
+  # Remove token server-side by deleting the token record
+    token = request.headers['Authorization']&.split(' ')&.last
+    if token.present?
+      token_record = Token.find_by(token: token)
+      token_record&.destroy
+    end
+
     render json: { message: 'Logged out successfully' }
   end
   

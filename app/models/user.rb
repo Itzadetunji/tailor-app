@@ -2,8 +2,7 @@ class User < ApplicationRecord
   has_many :auth_codes, dependent: :destroy
   
   validates :email, presence: true, uniqueness: { case_sensitive: false }
-  validates :first_name, presence: true
-  validates :last_name, presence: true
+  # first_name and last_name are optional now so users can sign up with email only
   
   before_save :downcase_email
   
@@ -12,18 +11,21 @@ class User < ApplicationRecord
   end
   
   def generate_auth_code!
-    # Expire any existing unused codes
-    auth_codes.where(used_at: nil).update_all(used_at: Time.current)
-    
-    # Generate new 6-digit code
-    code = SecureRandom.random_number(100000..999999).to_s
-    token = SecureRandom.urlsafe_base64(32)
-    
-    auth_codes.create!(
-      code: code,
-      token: token,
-      expires_at: 30.minutes.from_now
-    )
+    # Ensure no more than one active magic link: delete any existing unused codes,
+    # then create a fresh one inside a transaction.
+    ApplicationRecord.transaction do
+      auth_codes.where(used_at: nil).delete_all
+
+      # Generate new 6-digit code
+      code = SecureRandom.random_number(100000..999999).to_s
+      token = SecureRandom.urlsafe_base64(32)
+
+      auth_codes.create!(
+        code: code,
+        token: token,
+        expires_at: 15.minutes.from_now
+      )
+    end
   end
   
   private
