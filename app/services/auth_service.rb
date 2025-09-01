@@ -62,17 +62,19 @@ class AuthService
   end
   
   def self.verify_jwt_token(token)
+    return { success: false, message: 'Token is required' } if token.blank?
+    
     payload = JwtService.decode(token)
     
-    return { success: false, message: 'Invalid token' } unless payload && JwtService.valid_payload?(payload)
+    return { success: false, message: 'Invalid token format' } unless payload && JwtService.valid_payload?(payload)
     
     user = User.find_by(id: payload[:user_id])
     
     return { success: false, message: 'User not found' } unless user
     
-  # Ensure token exists in DB and is active
-  token_record = Token.active.find_by(token: token)
-  return { success: false, message: 'Token not found' } unless token_record && token_record.user_id == user.id
+    # Ensure token exists in DB and is active
+    token_record = Token.active.find_by(token: token)
+    return { success: false, message: 'Token not found or expired' } unless token_record && token_record.user_id == user.id
     
     {
       success: true,

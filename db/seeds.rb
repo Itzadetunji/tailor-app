@@ -2,6 +2,14 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
+# Create a default user for seeding
+user = User.find_or_create_by!(email: 'demo@example.com') do |u|
+  u.first_name = 'Demo'
+  u.last_name = 'User'
+end
+
+puts "Created or found user: #{user.email}"
+
 # Create some sample custom fields
 custom_fields = [
   { field_name: 'Collar Width', field_type: 'measurement' },
@@ -60,7 +68,7 @@ clients_data = [
 ]
 
 clients_data.each do |client_attrs|
-  client = Client.find_or_create_by!(email: client_attrs[:email]) do |c|
+  client = user.clients.find_or_create_by!(email: client_attrs[:email]) do |c|
     client_attrs.each { |key, value| c.send("#{key}=", value) }
   end
   
@@ -80,4 +88,4 @@ clients_data.each do |client_attrs|
   end
 end
 
-puts "Created #{Client.count} clients"
+puts "Created #{Client.count} clients for user #{user.email}"

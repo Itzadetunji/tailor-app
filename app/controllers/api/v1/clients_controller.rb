@@ -7,7 +7,9 @@ class Api::V1::ClientsController < Api::V1::BaseController
     per_page = [params[:per_page].to_i, 100].min
     per_page = 25 if per_page <= 0
     
-    clients = include_trashed ? Client.all : Client.active
+    # Scope clients to current user only
+    clients = current_user.clients
+    clients = include_trashed ? clients.all : clients.active
     clients = clients.includes(:client_custom_field_values, :custom_fields)
                     .order(:name)
     
@@ -31,7 +33,8 @@ class Api::V1::ClientsController < Api::V1::BaseController
   
   # POST /api/v1/clients
   def create
-    @client = Client.new(client_params)
+    # Associate new client with current user
+    @client = current_user.clients.build(client_params)
     
     if @client.save
       # Handle custom fields
@@ -74,7 +77,10 @@ class Api::V1::ClientsController < Api::V1::BaseController
     end
     
     begin
-      affected_count = Client.bulk_soft_delete(client_ids)
+      # Only allow bulk delete of current user's clients
+      user_clients = current_user.clients.where(id: client_ids)
+      affected_count = user_clients.update_all(in_trash: true, updated_at: Time.current)
+      
       render_success(
         { affected_count: affected_count },
         "#{affected_count} client(s) moved to trash successfully"
@@ -87,7 +93,8 @@ class Api::V1::ClientsController < Api::V1::BaseController
   private
   
   def set_client
-    @client = Client.find(params[:id])
+    # Scope client lookup to current user's clients only
+    @client = current_user.clients.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     render_not_found("Client not found")
   end

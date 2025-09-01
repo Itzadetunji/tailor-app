@@ -1,5 +1,6 @@
 FactoryBot.define do
   factory :client do
+    association :user
     sequence(:name) { |n| "Client #{n}" }
     gender { ["Male", "Female"].sample }
     measurement_unit { ["inches", "centimeters"].sample }

@@ -1,13 +1,26 @@
 class Api::V1::BaseController < ApplicationController
   
-  # Commented out for testing - uncomment for production
-  # before_action :authenticate_user!
+  # Enable authentication for user-specific data access
+  before_action :authenticate_user!
   
   protected
   
   def authenticate_user!
-    token = request.headers['Authorization']&.split(' ')&.last
+    authorization_header = request.headers['Authorization']
     
+    if authorization_header.blank?
+      render json: { error: 'Authorization header required' }, status: :unauthorized
+      return
+    end
+    
+    # Extract token from "Bearer <token>" format
+    token_parts = authorization_header.split(' ')
+    if token_parts.length != 2 || token_parts.first.downcase != 'bearer'
+      render json: { error: 'Invalid authorization header format. Expected: Bearer <token>' }, status: :unauthorized
+      return
+    end
+    
+    token = token_parts.last
     if token.blank?
       render json: { error: 'Authorization token required' }, status: :unauthorized
       return

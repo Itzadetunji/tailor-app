@@ -1,5 +1,6 @@
 class Client < ApplicationRecord
   # Associations
+  belongs_to :user
   has_many :client_custom_field_values, dependent: :destroy
   has_many :custom_fields, through: :client_custom_field_values
   

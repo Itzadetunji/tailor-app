@@ -7,8 +7,18 @@ class JwtService
   end
 
   def self.decode(token)
-    body = JWT.decode(token, SECRET_KEY)[0]
-    HashWithIndifferentAccess.new(body)
+    return nil if token.blank?
+    
+    begin
+      body = JWT.decode(token, SECRET_KEY)[0]
+      HashWithIndifferentAccess.new(body)
+    rescue JWT::DecodeError, JWT::ExpiredSignature, JWT::InvalidSignature => e
+      Rails.logger.warn "JWT decode error: #{e.message}"
+      nil
+    rescue => e
+      Rails.logger.error "Unexpected JWT decode error: #{e.message}"
+      nil
+    end
   end
 
   def self.valid_payload?(payload)

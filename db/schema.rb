@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_01_054656) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_01_085333) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "uuid-ossp"
@@ -67,10 +67,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_054656) do
     t.decimal "wrist", precision: 8, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["email"], name: "index_clients_on_email", unique: true, where: "(email IS NOT NULL)"
     t.index ["gender"], name: "index_clients_on_gender"
     t.index ["in_trash"], name: "index_clients_on_in_trash"
     t.index ["name"], name: "index_clients_on_name"
+    t.index ["user_id"], name: "index_clients_on_user_id"
   end
 
   create_table "custom_fields", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -105,5 +107,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_054656) do
   add_foreign_key "auth_codes", "users"
   add_foreign_key "client_custom_field_values", "clients"
   add_foreign_key "client_custom_field_values", "custom_fields"
+  add_foreign_key "clients", "users"
   add_foreign_key "tokens", "users"
 end
