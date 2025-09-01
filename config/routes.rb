@@ -14,6 +14,16 @@ Rails.application.routes.draw do
       get 'auth/verify', to: 'auth#verify_magic_link'
       get 'auth/profile', to: 'auth#profile'
       delete 'auth/logout', to: 'auth#logout'
+      
+      # Client routes
+      resources :clients, except: [:destroy] do
+        collection do
+          delete :bulk_delete
+        end
+      end
+      
+      # Custom field routes
+      resources :custom_fields
     end
   end
 

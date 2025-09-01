@@ -33,3 +33,11 @@
 
 # Ignore node modules
 ''
+gems
+/app/cache
+/app/bin
+/extensions
+bin
+cache
+specifications
+vendor/bundle/
