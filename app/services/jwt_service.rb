@@ -1,5 +1,5 @@
 class JwtService
-  SECRET_KEY = Rails.application.credentials.secret_key_base || 'fallback_secret_key'
+  SECRET_KEY = Rails.application.credentials.secret_key_base || "fallback_secret_key"
 
   def self.encode(payload, exp = 12.hours.from_now)
     payload[:exp] = exp.to_i
@@ -8,7 +8,7 @@ class JwtService
 
   def self.decode(token)
     return nil if token.blank?
-    
+
     begin
       body = JWT.decode(token, SECRET_KEY)[0]
       HashWithIndifferentAccess.new(body)
