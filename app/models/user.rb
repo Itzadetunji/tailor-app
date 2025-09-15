@@ -1,16 +1,17 @@
 class User < ApplicationRecord
   has_many :auth_codes, dependent: :destroy
   has_many :clients, dependent: :destroy
-  
+
   validates :email, presence: true, uniqueness: { case_sensitive: false }
   # first_name and last_name are optional now so users can sign up with email only
-  
+
   before_save :downcase_email
-  
+
   def full_name
-    "#{first_name} #{last_name}"
+    return nil if first_name.blank? && last_name.blank?
+    [ first_name, last_name ].compact.join(" ").strip
   end
-  
+
   def generate_auth_code!
     # Ensure no more than one active magic link: delete any existing unused codes,
     # then create a fresh one inside a transaction.
@@ -28,9 +29,9 @@ class User < ApplicationRecord
       )
     end
   end
-  
+
   private
-  
+
   def downcase_email
     self.email = email.downcase if email.present?
   end
