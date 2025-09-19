@@ -7,7 +7,7 @@ class CreateCustomFields < ActiveRecord::Migration[8.0]
 
       t.timestamps
     end
-    
+
     add_index :custom_fields, :field_name, unique: true
     add_index :custom_fields, :is_active
   end

@@ -10,7 +10,7 @@ BASE_URL = 'http://localhost:3000'
 def make_request(method, path, body = nil)
   uri = URI("#{BASE_URL}#{path}")
   http = Net::HTTP.new(uri.host, uri.port)
-  
+
   case method.upcase
   when 'GET'
     request = Net::HTTP::Get.new(uri)
@@ -21,16 +21,16 @@ def make_request(method, path, body = nil)
   when 'DELETE'
     request = Net::HTTP::Delete.new(uri)
   end
-  
+
   request['Content-Type'] = 'application/json'
   request.body = body.to_json if body
-  
+
   response = http.request(request)
-  
+
   puts "\n#{method} #{path}"
   puts "Status: #{response.code}"
   puts "Response: #{JSON.pretty_generate(JSON.parse(response.body))}" rescue puts "Response: #{response.body}"
-  
+
   JSON.parse(response.body) rescue nil
 end
 
@@ -75,7 +75,7 @@ client_response = make_request('POST', '/api/v1/clients', client_data)
 # Test 5: Update the client if creation was successful
 if client_response && client_response['success']
   client_id = client_response['data']['data']['id']
-  
+
   puts "\n5. Testing PATCH /api/v1/clients/#{client_id}"
   update_data = {
     client: {
@@ -84,7 +84,7 @@ if client_response && client_response['success']
     }
   }
   make_request('PATCH', "/api/v1/clients/#{client_id}", update_data)
-  
+
   # Test 6: Get single client
   puts "\n6. Testing GET /api/v1/clients/#{client_id}"
   make_request('GET', "/api/v1/clients/#{client_id}")

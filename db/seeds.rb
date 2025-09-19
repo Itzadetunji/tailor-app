@@ -71,18 +71,18 @@ clients_data.each do |client_attrs|
   client = user.clients.find_or_create_by!(email: client_attrs[:email]) do |c|
     client_attrs.each { |key, value| c.send("#{key}=", value) }
   end
-  
+
   # Add some custom field values
   if client.persisted?
     collar_width_field = CustomField.find_by(field_name: 'Collar Width')
     fabric_preference_field = CustomField.find_by(field_name: 'Fabric Preference')
-    
+
     if collar_width_field && client.measurement_unit == 'inches'
       client.set_custom_field_value(collar_width_field, '15.5')
     end
-    
+
     if fabric_preference_field
-      preferences = ['Cotton', 'Wool', 'Linen', 'Silk']
+      preferences = [ 'Cotton', 'Wool', 'Linen', 'Silk' ]
       client.set_custom_field_value(fabric_preference_field, preferences.sample)
     end
   end
