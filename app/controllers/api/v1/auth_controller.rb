@@ -132,7 +132,7 @@ class Api::V1::AuthController < ApplicationController
       return
     end
 
-    @current_user = result[:user]
+    @current_user = result[:user] # This is jsut like a middleware in nodejs so that the current_user can be accessed once initialized in the HTTP request
   end
 
   def current_user
