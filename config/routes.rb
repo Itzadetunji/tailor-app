@@ -7,7 +7,9 @@ Rails.application.routes.draw do
 
   # API routes
   namespace :api do
+    # namespace :api → /api/...
     namespace :v1 do
+      # namespace :v1 → /api/v1/...
       # Authentication routes
       post "auth/request_magic_link", to: "auth#request_magic_link"
       post "auth/verify_code", to: "auth#verify_code"
@@ -17,8 +19,13 @@ Rails.application.routes.draw do
 
       # Client routes
       resources :clients, except: [ :destroy ] do
+        # GET /api/v1/clients → ClientsController#index
+        # GET /api/v1/clients/:id → ClientsController#show
+        # POST /api/v1/clients → ClientsController#create
+        # PATCH /api/v1/clients/:id → ClientsController#update
+        # PUT /api/v1/clients/:id → ClientsController#update
         collection do
-          delete :bulk_delete
+          delete :bulk_delete # DELETE /api/v1/clients/bulk_delete → ClientsController#bulk_delete
         end
       end
 

@@ -3,7 +3,16 @@ class Api::V1::CustomFieldsController < Api::V1::BaseController
 
   # GET /api/v1/custom_fields
   def index
-    custom_fields = CustomField.active.order(:field_name)
+    custom_fields = CustomField.all
+    is_active = params[:is_active]
+
+    if is_active.present?
+      is_active = ActiveModel::Type::Boolean.new.cast(is_active) # THis is to convert the value to a boolean
+      custom_fields = is_active ? CustomField.active : CustomField.inactive
+    end
+
+    custom_fields = custom_fields.order(:field_name)
+
     serialized_fields = custom_fields.map do |field|
       CustomFieldSerializer.new(field).serializable_hash
     end
