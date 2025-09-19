@@ -3,12 +3,12 @@ class Api::V1::CustomFieldsController < Api::V1::BaseController
 
   # GET /api/v1/custom_fields
   def index
-    custom_fields = CustomField.all
+    custom_fields = current_user.custom_fields
     is_active = params[:is_active]
 
     if is_active.present?
-      is_active = ActiveModel::Type::Boolean.new.cast(is_active) # THis is to convert the value to a boolean
-      custom_fields = is_active ? CustomField.active : CustomField.inactive
+      is_active = ActiveModel::Type::Boolean.new.cast(is_active)
+      custom_fields = is_active ? custom_fields.active : custom_fields.inactive
     end
 
     custom_fields = custom_fields.order(:field_name)
@@ -28,7 +28,7 @@ class Api::V1::CustomFieldsController < Api::V1::BaseController
 
   # POST /api/v1/custom_fields
   def create
-    @custom_field = CustomField.new(custom_field_params)
+    @custom_field = current_user.custom_fields.build(custom_field_params)
 
     if @custom_field.save
       serialized_field = CustomFieldSerializer.new(@custom_field).serializable_hash
@@ -59,7 +59,8 @@ class Api::V1::CustomFieldsController < Api::V1::BaseController
   private
 
   def set_custom_field
-    @custom_field = CustomField.find(params[:id])
+    # 👇 ensures user can only fetch their own custom_fields
+    @custom_field = current_user.custom_fields.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     render_not_found("Custom field not found")
   end

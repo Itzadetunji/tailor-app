@@ -1,14 +1,16 @@
 class CustomField < ApplicationRecord
   # Associations
+  belongs_to :user
 
   # This means: "When I delete a CustomField, also delete all related ClientCustomFieldValue records"
   has_many :client_custom_field_values, dependent: :destroy
   has_many :clients, through: :client_custom_field_values
 
   # Validations
-  validates :field_name, presence: true, uniqueness: true, length: { minimum: 2, maximum: 100 }
+  validates :field_name, presence: true, uniqueness: { scope: :user_id }, length: { minimum: 2, maximum: 100 }
   validates :field_type, presence: true
   validates :is_active, inclusion: { in: [ true, false ] }
+  validates :user, presence: true
 
   # Scopes
   scope :active, -> { where(is_active: true) }

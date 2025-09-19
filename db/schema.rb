@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_01_085333) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_19_134651) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "uuid-ossp"
@@ -81,8 +81,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_085333) do
     t.boolean "is_active", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["field_name"], name: "index_custom_fields_on_field_name", unique: true
+    t.bigint "user_id"
+    t.index ["field_name", "user_id"], name: "index_custom_fields_on_field_name_and_user_id", unique: true
     t.index ["is_active"], name: "index_custom_fields_on_is_active"
+    t.index ["user_id"], name: "index_custom_fields_on_user_id"
   end
 
   create_table "tokens", force: :cascade do |t|
@@ -108,5 +110,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_085333) do
   add_foreign_key "client_custom_field_values", "clients"
   add_foreign_key "client_custom_field_values", "custom_fields"
   add_foreign_key "clients", "users"
+  add_foreign_key "custom_fields", "users"
   add_foreign_key "tokens", "users"
 end

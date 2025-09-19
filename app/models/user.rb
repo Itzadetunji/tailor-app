@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   has_many :auth_codes, dependent: :destroy
   has_many :clients, dependent: :destroy
+  has_many :custom_fields, dependent: :destroy
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }
   # first_name and last_name are optional now so users can sign up with email only
