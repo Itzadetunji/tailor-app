@@ -92,13 +92,18 @@ class Api::V1::AuthController < ApplicationController
 
   # GET /api/v1/auth/profile
   def profile
+    serialized_custom_fields = current_user.custom_fields.map do |field|
+      CustomFieldSerializer.new(field).serializable_hash
+    end
+
     render json: {
       user: {
         id: current_user.id,
         email: current_user.email,
         first_name: current_user.first_name,
         last_name: current_user.last_name,
-        full_name: current_user.full_name
+        full_name: current_user.full_name,
+        custom_fields: serialized_custom_fields
       }
     }
   end
