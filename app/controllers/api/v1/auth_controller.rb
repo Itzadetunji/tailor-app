@@ -46,6 +46,12 @@ class Api::V1::AuthController < ApplicationController
     result = AuthService.verify_code(code)
 
     if result[:success]
+
+      current_user = result[:user]
+      serialized_custom_fields = current_user.custom_fields.map do |field|
+        CustomFieldSerializer.new(field).serializable_hash
+      end
+
       render json: {
         message: result[:message],
         token: result[:token],
@@ -54,7 +60,8 @@ class Api::V1::AuthController < ApplicationController
           email: result[:user].email,
           first_name: result[:user].first_name,
           last_name: result[:user].last_name,
-          full_name: result[:user].full_name
+          full_name: result[:user].full_name,
+          custom_fields: serialized_custom_fields
         }
       }
     else
@@ -74,6 +81,12 @@ class Api::V1::AuthController < ApplicationController
     result = AuthService.verify_magic_link(token)
 
     if result[:success]
+
+      current_user = result[:user]
+      serialized_custom_fields = current_user.custom_fields.map do |field|
+        CustomFieldSerializer.new(field).serializable_hash
+      end
+
       render json: {
         message: result[:message],
         token: result[:token],
@@ -82,7 +95,8 @@ class Api::V1::AuthController < ApplicationController
           email: result[:user].email,
           first_name: result[:user].first_name,
           last_name: result[:user].last_name,
-          full_name: result[:user].full_name
+          full_name: result[:user].full_name,
+          custom_fields: serialized_custom_fields
         }
       }
     else
