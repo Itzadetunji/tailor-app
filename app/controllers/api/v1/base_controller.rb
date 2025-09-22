@@ -68,10 +68,19 @@ class Api::V1::BaseController < ApplicationController
   end
 
   def paginate_collection(collection, per_page = 25)
-    page = params[:page] || 1
+    return { data: [], pagination: {} } if collection.blank?
+
+    page = params[:page].presence || 1
+    per_page = per_page.to_i
+    per_page = 25 if per_page <= 0
     per_page = [ per_page, 100 ].min
 
-    paginated_collection = collection.page(page).per(per_page)
+    begin
+      paginated_collection = collection.page(page).per(per_page)
+    rescue => e
+      Rails.logger.error("Pagination failed: #{e.message}")
+      return { data: [], pagination: {} }
+    end
 
     {
       data: paginated_collection,
