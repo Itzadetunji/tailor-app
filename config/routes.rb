@@ -31,6 +31,10 @@ Rails.application.routes.draw do
 
       # Custom field routes
       resources :custom_fields
+
+      # User routes
+      patch "users/profile", to: "users#update"
+      put "users/profile", to: "users#update"
     end
   end
 

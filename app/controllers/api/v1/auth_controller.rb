@@ -47,22 +47,10 @@ class Api::V1::AuthController < ApplicationController
 
     if result[:success]
 
-      current_user = result[:user]
-      serialized_custom_fields = current_user.custom_fields.map do |field|
-        CustomFieldSerializer.new(field).serializable_hash
-      end
-
       render json: {
         message: result[:message],
         token: result[:token],
-        user: {
-          id: result[:user].id,
-          email: result[:user].email,
-          first_name: result[:user].first_name,
-          last_name: result[:user].last_name,
-          full_name: result[:user].full_name,
-          custom_fields: serialized_custom_fields
-        }
+        user: user_data()
       }
     else
       render json: { error: result[:message] }, status: :unprocessable_entity
@@ -82,22 +70,10 @@ class Api::V1::AuthController < ApplicationController
 
     if result[:success]
 
-      current_user = result[:user]
-      serialized_custom_fields = current_user.custom_fields.map do |field|
-        CustomFieldSerializer.new(field).serializable_hash
-      end
-
       render json: {
         message: result[:message],
         token: result[:token],
-        user: {
-          id: result[:user].id,
-          email: result[:user].email,
-          first_name: result[:user].first_name,
-          last_name: result[:user].last_name,
-          full_name: result[:user].full_name,
-          custom_fields: serialized_custom_fields
-        }
+        user: user_data()
       }
     else
       render json: { error: result[:message] }, status: :unprocessable_entity
@@ -106,19 +82,8 @@ class Api::V1::AuthController < ApplicationController
 
   # GET /api/v1/auth/profile
   def profile
-    serialized_custom_fields = current_user.custom_fields.map do |field|
-      CustomFieldSerializer.new(field).serializable_hash
-    end
-
     render json: {
-      user: {
-        id: current_user.id,
-        email: current_user.email,
-        first_name: current_user.first_name,
-        last_name: current_user.last_name,
-        full_name: current_user.full_name,
-        custom_fields: serialized_custom_fields
-      }
+      user: user_data()
     }
   end
 
@@ -156,5 +121,30 @@ class Api::V1::AuthController < ApplicationController
 
   def current_user
     @current_user
+  end
+
+  def user_data
+    serialized_custom_fields = current_user.custom_fields.map do |field|
+      CustomFieldSerializer.new(field).serializable_hash
+    end
+
+    {
+      id: current_user.id,
+      email: current_user.email,
+      first_name: current_user.first_name,
+      last_name: current_user.last_name,
+      full_name: current_user.full_name,
+      profession: current_user.profession,
+      business_name: current_user.business_name,
+      business_address: current_user.business_address,
+      skills: current_user.skills || [],
+      has_onboarded: current_user.has_onboarded,
+      onboarded: current_user.onboarded?,
+      business_info_complete: current_user.business_info_complete?,
+      has_skills: current_user.has_skills?,
+      created_at: current_user.created_at,
+      updated_at: current_user.updated_at,
+      custom_fields: serialized_custom_fields
+    }
   end
 end

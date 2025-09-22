@@ -1,4 +1,7 @@
 class User < ApplicationRecord
+  # Use UUID as primary key
+  self.primary_key = :id
+
   has_many :auth_codes, dependent: :destroy
   has_many :clients, dependent: :destroy
   has_many :custom_fields, dependent: :destroy
