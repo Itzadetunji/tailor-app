@@ -3,14 +3,74 @@ class User < ApplicationRecord
   has_many :clients, dependent: :destroy
   has_many :custom_fields, dependent: :destroy
 
+  # Define profession choices
+  PROFESSION_CHOICES = [
+    "Tailors / Dressmakers",
+    "Fashion Designers",
+    "Costume Designers (Theater/Film/TV)",
+    "Seamstresses",
+    "Medical Garment Makers"
+  ].freeze
+
+  # Define skills choices
+  SKILLS_CHOICES = [
+    "Fashion Designing",
+    "Textile Design",
+    "Costume Design",
+    "Fashion Illustration",
+    "Fashion Stylist",
+    "Pattern Maker",
+    "Bespoke Tailoring",
+    "Shoemaking",
+    "Bag Designing",
+    "Wardrobe Consultant",
+    "Sample Maker",
+    "CAD Fashion Designer",
+    "Seamstress"
+  ].freeze
+
   validates :email, presence: true, uniqueness: { case_sensitive: false }
+  validates :profession, inclusion: { in: PROFESSION_CHOICES }, allow_nil: true
+  validate :skills_must_be_from_choices
   # first_name and last_name are optional now so users can sign up with email only
+  # business_name and business_address are optional
 
   before_save :downcase_email
 
   def full_name
     return nil if first_name.blank? && last_name.blank?
     [ first_name, last_name ].compact.join(" ").strip
+  end
+
+  def onboarded?
+    has_onboarded
+  end
+
+  def complete_onboarding!
+    update!(has_onboarded: true)
+  end
+
+  def business_info_complete?
+    business_name.present? && business_address.present?
+  end
+
+  def has_skills?
+    skills.present? && skills.any?
+  end
+
+  def add_skill(skill)
+    return false unless SKILLS_CHOICES.include?(skill)
+    return false if skills.include?(skill)
+
+    self.skills = (skills || []) + [ skill ]
+    save
+  end
+
+  def remove_skill(skill)
+    return false unless skills.include?(skill)
+
+    self.skills = skills - [ skill ]
+    save
   end
 
   def generate_auth_code!
@@ -35,5 +95,14 @@ class User < ApplicationRecord
 
   def downcase_email
     self.email = email.downcase if email.present?
+  end
+
+  def skills_must_be_from_choices
+    return if skills.blank?
+
+    invalid_skills = skills - SKILLS_CHOICES
+    if invalid_skills.any?
+      errors.add(:skills, "contains invalid skills: #{invalid_skills.join(', ')}")
+    end
   end
 end
