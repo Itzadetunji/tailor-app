@@ -21,6 +21,7 @@ default: &default
 
 development:
   <<: *default
+  url: <%= ENV['DATABASE_URL'] %>
   database: tailor_app_development
 
   # The specified database role being used to connect to PostgreSQL.
@@ -55,6 +56,7 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
+  url: <%= ENV['DATABASE_URL'] %>
   database: tailor_app_test
 
 # As with config/credentials.yml, you never want to store sensitive information,
@@ -80,8 +82,9 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: tailor_app_production
-    username: tailor_app
+    url: <%= ENV['DATABASE_URL'] %>
+    database: tailor_app_database
+    username: tailor_app_database_user
     password: <%= ENV["TAILOR_APP_DATABASE_PASSWORD"] %>
   cache:
     <<: *primary_production
