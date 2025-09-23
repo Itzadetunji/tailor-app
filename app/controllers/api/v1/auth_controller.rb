@@ -50,7 +50,7 @@ class Api::V1::AuthController < ApplicationController
       render json: {
         message: result[:message],
         token: result[:token],
-        user: user_data()
+        user: user_data(result[:user])
       }
     else
       render json: { error: result[:message] }, status: :unprocessable_entity
@@ -73,7 +73,7 @@ class Api::V1::AuthController < ApplicationController
       render json: {
         message: result[:message],
         token: result[:token],
-        user: user_data()
+        user: user_data(result[:user])
       }
     else
       render json: { error: result[:message] }, status: :unprocessable_entity
@@ -123,27 +123,29 @@ class Api::V1::AuthController < ApplicationController
     @current_user
   end
 
-  def user_data
-    serialized_custom_fields = current_user.custom_fields.map do |field|
+  def user_data(user = nil)
+    authenticated_user = user || current_user
+
+    serialized_custom_fields = authenticated_user.custom_fields.map do |field|
       CustomFieldSerializer.new(field).serializable_hash
     end
 
     {
-      id: current_user.id,
-      email: current_user.email,
-      first_name: current_user.first_name,
-      last_name: current_user.last_name,
-      full_name: current_user.full_name,
-      profession: current_user.profession,
-      business_name: current_user.business_name,
-      business_address: current_user.business_address,
-      skills: current_user.skills || [],
-      has_onboarded: current_user.has_onboarded,
-      onboarded: current_user.onboarded?,
-      business_info_complete: current_user.business_info_complete?,
-      has_skills: current_user.has_skills?,
-      created_at: current_user.created_at,
-      updated_at: current_user.updated_at,
+      id: authenticated_user.id,
+      email: authenticated_user.email,
+      first_name: authenticated_user.first_name,
+      last_name: authenticated_user.last_name,
+      full_name: authenticated_user.full_name,
+      profession: authenticated_user.profession,
+      business_name: authenticated_user.business_name,
+      business_address: authenticated_user.business_address,
+      skills: authenticated_user.skills || [],
+      has_onboarded: authenticated_user.has_onboarded,
+      onboarded: authenticated_user.onboarded?,
+      business_info_complete: authenticated_user.business_info_complete?,
+      has_skills: authenticated_user.has_skills?,
+      created_at: authenticated_user.created_at,
+      updated_at: authenticated_user.updated_at,
       custom_fields: serialized_custom_fields
     }
   end
