@@ -29,10 +29,14 @@ class Api::V1::AuthController < ApplicationController
 
     render json: {
       message: "Magic link sent successfully",
-      debug: Rails.env.development? ? {
+      # debug: Rails.env.development? ? {
+      #   code: email_result[:code],
+      #   magic_link: email_result[:magic_link]
+      # } : nil
+      debug: {
         code: email_result[:code],
         magic_link: email_result[:magic_link]
-      } : nil
+      }
     }
   end
 
