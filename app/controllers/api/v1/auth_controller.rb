@@ -1,4 +1,6 @@
 class Api::V1::AuthController < ApplicationController
+  include UserDataConcern
+
   before_action :authenticate_user!, only: [ :profile, :logout ] # This is basically a middleware
 
   # POST /api/v1/auth/request_magic_link
@@ -121,29 +123,5 @@ class Api::V1::AuthController < ApplicationController
 
   def current_user
     @current_user
-  end
-
-  def user_data(user = nil)
-    authenticated_user = user || current_user
-
-    serialized_custom_fields = authenticated_user.custom_fields.map do |field|
-      CustomFieldSerializer.new(field).serializable_hash
-    end
-
-    {
-      id: authenticated_user.id,
-      email: authenticated_user.email,
-      first_name: authenticated_user.first_name,
-      last_name: authenticated_user.last_name,
-      full_name: authenticated_user.full_name,
-      profession: authenticated_user.profession,
-      business_name: authenticated_user.business_name,
-      business_address: authenticated_user.business_address,
-      skills: authenticated_user.skills || [],
-      has_onboarded: authenticated_user.has_onboarded,
-      created_at: authenticated_user.created_at,
-      updated_at: authenticated_user.updated_at,
-      custom_fields: serialized_custom_fields
-    }
   end
 end

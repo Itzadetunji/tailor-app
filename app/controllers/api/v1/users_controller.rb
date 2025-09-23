@@ -1,6 +1,8 @@
 class Api::V1::UsersController < Api::V1::BaseController
+  include UserDataConcern
+
   before_action :authenticate_user!
-  before_action :set_user, only: [ :show, :update ]
+  before_action :set_user, only: [ :update ]
 
   # PATCH/PUT /api/v1/users/profile
   def update

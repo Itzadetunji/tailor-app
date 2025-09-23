@@ -35,8 +35,14 @@ Rails.application.routes.draw do
       # User routes
       patch "users/profile", to: "users#update"
       put "users/profile", to: "users#update"
+
+      # Catch-all route for API endpoints not found
+      match "*path", to: "application#not_found", via: :all
     end
   end
+
+  # Catch-all route for non-API endpoints
+  match "*path", to: "application#not_found", via: :all
 
   # Defines the root path route ("/")
   # root "posts#index"
