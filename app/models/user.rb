@@ -45,20 +45,8 @@ class User < ApplicationRecord
     [ first_name, last_name ].compact.join(" ").strip
   end
 
-  def onboarded?
-    has_onboarded
-  end
-
   def complete_onboarding!
     update!(has_onboarded: true)
-  end
-
-  def business_info_complete?
-    business_name.present? && business_address.present?
-  end
-
-  def has_skills?
-    skills.present? && skills.any?
   end
 
   def add_skill(skill)

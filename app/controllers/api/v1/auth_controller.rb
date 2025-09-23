@@ -141,9 +141,6 @@ class Api::V1::AuthController < ApplicationController
       business_address: authenticated_user.business_address,
       skills: authenticated_user.skills || [],
       has_onboarded: authenticated_user.has_onboarded,
-      onboarded: authenticated_user.onboarded?,
-      business_info_complete: authenticated_user.business_info_complete?,
-      has_skills: authenticated_user.has_skills?,
       created_at: authenticated_user.created_at,
       updated_at: authenticated_user.updated_at,
       custom_fields: serialized_custom_fields
