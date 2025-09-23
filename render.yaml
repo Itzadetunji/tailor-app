@@ -10,7 +10,7 @@ services:
     name: tailor-app
     runtime: ruby
     buildCommand: "./bin/render-build.sh"
-    startCommand: "bundle exec rails server"
+    startCommand: "bundle exec puma -t 5:5 -p ${PORT:-3000} -e ${RACK_ENV:-production}"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
