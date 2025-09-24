@@ -8,7 +8,7 @@ class Client < ApplicationRecord
   validates :name, presence: true, length: { minimum: 2, maximum: 100 }
   validates :gender, presence: true, inclusion: { in: %w[Male Female] }
   validates :measurement_unit, presence: true, inclusion: { in: %w[inches centimeters] }
-  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true, uniqueness: true
+  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
   validates :phone_number, length: { maximum: 20 }, allow_blank: true
 
   # Validate measurement values are positive when present

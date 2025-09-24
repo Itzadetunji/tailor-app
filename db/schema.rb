@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_22_135416) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_24_105527) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "uuid-ossp"
@@ -68,7 +68,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_22_135416) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id"
-    t.index ["email"], name: "index_clients_on_email", unique: true, where: "(email IS NOT NULL)"
     t.index ["gender"], name: "index_clients_on_gender"
     t.index ["in_trash"], name: "index_clients_on_in_trash"
     t.index ["name"], name: "index_clients_on_name"

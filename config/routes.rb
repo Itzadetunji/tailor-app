@@ -10,6 +10,10 @@ Rails.application.routes.draw do
     # namespace :api → /api/...
     namespace :v1 do
       # namespace :v1 → /api/v1/...
+
+      # Health check route
+      get "health", to: "health#check"
+
       # Authentication routes
       post "auth/request_magic_link", to: "auth#request_magic_link"
       post "auth/verify_code", to: "auth#verify_code"

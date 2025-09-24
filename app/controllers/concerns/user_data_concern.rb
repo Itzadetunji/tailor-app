@@ -32,4 +32,22 @@ module UserDataConcern
       custom_fields: serialized_custom_fields
     }
   end
+
+  def authenticate_user!
+    token = request.headers["Authorization"]&.split(" ")&.last
+
+    if token.blank?
+      render json: { error: "Authorization token required" }, status: :unauthorized
+      return
+    end
+
+    result = AuthService.verify_jwt_token(token)
+
+    unless result[:success]
+      render json: { error: result[:message] }, status: :unauthorized
+      return
+    end
+
+    @current_user = result[:user] # This is jsut like a middleware in nodejs so that the current_user can be accessed once initialized in the HTTP request
+  end
 end
